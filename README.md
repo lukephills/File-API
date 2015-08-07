@@ -1,6 +1,6 @@
-#Pitch Shifter
+#FILE API - LOADING AUDIO
 
-Inspired by Chris Wilson's [Jungle](https://github.com/cwilso/Audio-Input-Effects/blob/master/js/jungle.js)
+Example loading audio files using the file API
 
 
 ### Development

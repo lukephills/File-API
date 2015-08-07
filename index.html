@@ -1,8 +1,22 @@
 <html>
     <head>
         <script src="bundle.js"></script>
+        <style>
+        #drop_zone {
+            width: 400px;
+            border: solid red;
+            text-align: center;
+            padding: 80px;
+        }
+        #fileButton {
+            display: none;
+        }
+        </style>
     </head>
     <body>
+        <div id="drop_zone">Drop files here or click anywhere in the box</div>
+        <output id="list"></output>
 
+        <input type="file" id="fileButton" name="files[]" />
     </body>
 </html>

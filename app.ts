@@ -1,25 +1,84 @@
-import PitchShifter = require('./PitchShifter');
-import Tone = require("./Tone");
+import $ = require('jquery');
+
+
+document.addEventListener('DOMContentLoaded', init);
+var output = [];
+
+function init() {
+    // Check for the various File API support.
+    if (window.File && window.FileReader && window.FileList && window.Blob) {
+      // Great success! All the File APIs are supported.
+    } else {
+      alert('The File APIs are not fully supported in this browser.');
+    }
+
+
+    // Setup the dnd listeners.
+    var dropZone = document.getElementById('drop_zone');
+    dropZone.addEventListener('dragenter', handleDragEnter, false);
+    dropZone.addEventListener('dragover', handleDragOver, false);
+    dropZone.addEventListener('dragleave', handleDragLeave, false);
+    dropZone.addEventListener('drop', handleFileSelect, false);
+    dropZone.addEventListener('click', handleDropZoneClick, false);
+
+    document.getElementById('fileButton').addEventListener('change', handleFileButtonSelect, false);
+
+}
+
+function handleDropZoneClick() {
+    var event = document.createEvent('HTMLEvents');
+    event.initEvent('click', true, false);
+    document.getElementById('fileButton').dispatchEvent(event);
+}
 
 
 
-const tone = new Tone();
-/*const audioContext = tone.au*/
-const pitchShift = new PitchShifter(tone.audioContext);
 
-var osc = tone.audioContext.createOscillator();
-var gain = tone.audioContext.createGain();
-gain.gain.value = 0.3;
-osc.connect(pitchShift.input);
-pitchShift.output.connect(gain);
-gain.connect(tone.audioContext.destination);
-osc.start();
+function handleFileSelect(e) {
+    e.stopPropagation();
+    e.preventDefault();
 
-setInterval(()=> {
-    pitchShift.PitchOffset = getRandomArbitrary(-1, 1)
-}, 1000);
+    var files = e.dataTransfer.files; // FileList object.
+
+    printFileData(files);
+
+    console.dir(e.dataTransfer.files[0]);
+
+}
+
+function printFileData(files) {
+    // files is a FileList of File objects. List some properties.
+    var output = [];
+    for (var i = 0, f; f = files[i]; i++) {
+      output.push('<li><strong>', encodeURI(f.name), '</strong> (', f.type || 'n/a', ') - ',
+                  f.size, ' bytes, last modified: ',
+                  f.lastModifiedDate ? f.lastModifiedDate.toLocaleDateString() : 'n/a',
+                  '</li>');
+    }
+    document.getElementById('list').innerHTML = '<ul>' + output.join('') + '</ul>';
+}
 
 
-function getRandomArbitrary(min, max) {
-  return Math.random() * (max - min) + min;
+function handleDragEnter(e) {
+    document.getElementById('drop_zone').style.borderColor = 'green';
+    console.log('file drag entered area');
+}
+
+function handleDragOver(e) {
+    e.stopPropagation();
+    e.preventDefault();
+    e.dataTransfer.dropEffect = 'copy'; // Explicitly show this is a copy.
+    console.log('file drag over');
+}
+
+function handleDragLeave(e) {
+    document.getElementById('drop_zone').style.borderColor = 'red';
+    console.log('file left drag area');
+}
+
+
+function handleFileButtonSelect(e) {
+    var files = e.target.files; // FileList object
+    printFileData(files);
+    console.dir(e.target.files[0]);
 }
