@@ -1,6 +1,6 @@
-#FILE API - LOADING AUDIO
+#FILE API - LOAD & DECODE AUDIO
 
-Example loading audio files using the file API
+Drag and drop and audio file in the container and it will be decoded into an AudioBuffer ready for use with the Web Audio API.
 
 
 ### Development
