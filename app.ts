@@ -3,13 +3,14 @@ import $ = require('jquery');
 
 document.addEventListener('DOMContentLoaded', init);
 var output = [];
+var Player = new Tone.Player();
 
 function init() {
     // Check for the various File API support.
     if (window.File && window.FileReader && window.FileList && window.Blob) {
       // Great success! All the File APIs are supported.
     } else {
-      alert('The File APIs are not fully supported in this browser.');
+      console.error('The File APIs are not fully supported in this browser.');
     }
 
 
@@ -32,30 +33,49 @@ function handleDropZoneClick() {
 }
 
 
-
-
 function handleFileSelect(e) {
     e.stopPropagation();
     e.preventDefault();
-
     var files = e.dataTransfer.files; // FileList object.
-
     printFileData(files);
-
     console.dir(e.dataTransfer.files[0]);
+}
 
+
+function handleFileButtonSelect(e) {
+    var files = e.target.files; // FileList object
+    printFileData(files);
+    console.dir(e.target.files[0]);
 }
 
 function printFileData(files) {
     // files is a FileList of File objects. List some properties.
-    var output = [];
+    // Loop through the FileList and play the audio files.
     for (var i = 0, f; f = files[i]; i++) {
-      output.push('<li><strong>', encodeURI(f.name), '</strong> (', f.type || 'n/a', ') - ',
-                  f.size, ' bytes, last modified: ',
-                  f.lastModifiedDate ? f.lastModifiedDate.toLocaleDateString() : 'n/a',
-                  '</li>');
+        console.log(f.type);
+
+        // Only process audio files.
+        if (!f.type.match('audio.*')) {
+            console.log('not an audio file');
+            continue;
+        }
+
+        var reader = new FileReader();
+
+        reader.onload = function(ev:any) {
+            Player.context.decodeAudioData(ev.target.result, function(theBuffer){
+
+                playBuffer(theBuffer);
+
+            }, function(){ //error function
+            	console.error('Sorry, we could not process this audio file.');
+
+            });
+        };
+
+    reader.readAsArrayBuffer(f);
+
     }
-    document.getElementById('list').innerHTML = '<ul>' + output.join('') + '</ul>';
 }
 
 
@@ -77,8 +97,13 @@ function handleDragLeave(e) {
 }
 
 
-function handleFileButtonSelect(e) {
-    var files = e.target.files; // FileList object
-    printFileData(files);
-    console.dir(e.target.files[0]);
+function playBuffer(buffer: AudioBuffer) {
+    console.log(buffer);
+    Player.buffer = buffer;
+    Player.volume.value = 0.5;
+    Player.loop = true;
+    Player.toMaster();
+    Player.start();
+    console.log(Player);
+    document.getElementById('drop_zone').style.borderColor = 'green';
 }

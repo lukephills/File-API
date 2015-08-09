@@ -1,8 +1,13 @@
 {
-  "name": "FileAPI example",
+  "name": "file_api_example",
   "version": "0.0.1",
   "dependencies": {
+    "tone": "^0.5.1",
     "ts-loader": "^0.4.7",
     "webpack": "^1.10.5"
+  },
+  "devDependencies": {
+    "jquery": "^2.1.4",
+    "tone": "^0.5.1"
   }
 }
